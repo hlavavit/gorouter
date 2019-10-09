@@ -9,7 +9,7 @@ import (
 
 //https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/test/java/org/springframework/util/AntPathMatcherTests.java
 func TestDefaultPathMatcher(t *testing.T) {
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.InfoLevel)
 	checkPathMatcher(t, "test", "test", true, map[string]string{})
 	checkPathMatcher(t, "/test", "/test", true, map[string]string{})
 	checkPathMatcher(t, "https://example.org", "https://example.org", true, map[string]string{})

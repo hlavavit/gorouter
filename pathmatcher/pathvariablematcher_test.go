@@ -9,7 +9,7 @@ import (
 
 //https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/test/java/org/springframework/util/AntPathMatcherTests.java
 func TestPathVariableMatcher(t *testing.T) {
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.InfoLevel)
 	//basic
 	checkPathVariable(t, "{hotel}", "1", true, map[string]string{"hotel": "1"})
 	checkPathVariable(t, "h?tel", "hotel", true, map[string]string{})
