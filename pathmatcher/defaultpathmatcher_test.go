@@ -8,7 +8,7 @@ import (
 )
 
 //https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/test/java/org/springframework/util/AntPathMatcherTests.java
-func TestdefaultPathMatcher(t *testing.T) {
+func TestDefaultPathMatcher(t *testing.T) {
 	log.SetLevel(log.InfoLevel)
 	checkPathMatcher(t, "test", "test", true, map[string]string{})
 	checkPathMatcher(t, "/test", "/test", true, map[string]string{})
