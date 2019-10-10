@@ -33,7 +33,7 @@ func TestPathVariableMatcher(t *testing.T) {
 }
 
 func checkPathVariable(t *testing.T, pattern string, value string, expected bool, extracted map[string]string) {
-	match, variables := NewPathVariableMatcher(pattern).Match(value)
+	match, variables := newPathVariableMatcher(pattern).match(value)
 	if match != expected {
 		t.Fatal(fmt.Sprintf("For pattern=%v and value=%v expected match to be %v", pattern, value, expected))
 	}

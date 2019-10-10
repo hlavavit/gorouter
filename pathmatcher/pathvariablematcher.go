@@ -14,16 +14,16 @@ const (
 	defaultPathVariablePattern = "(.*)"
 )
 
-// PathVariableMatcher matches and extracts patterns from url tokens
+// pathVariableMatcher matches and extracts patterns from url tokens
 //
 // Ispired by AntPathStringMatcher class https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/util/AntPathMatcher.java
-type PathVariableMatcher struct {
+type pathVariableMatcher struct {
 	variableNames []string
 	pattern       *regexp.Regexp
 }
 
-// NewPathVariableMatcher creates new PathVariableMatcher. provided simple pattern /*-t?st/*-{val:[a-z]}/{val2}.ext constucts regexp patern.
-func NewPathVariableMatcher(pattern string) *PathVariableMatcher {
+// NewpathVariableMatcher creates new pathVariableMatcher. provided simple pattern /*-t?st/*-{val:[a-z]}/{val2}.ext constucts regexp patern.
+func newPathVariableMatcher(pattern string) *pathVariableMatcher {
 	matches := pathVariableGlobMatcher.FindAllStringSubmatchIndex(pattern, -1)
 	end := 0
 	patternBuilder := ""
@@ -51,8 +51,8 @@ func NewPathVariableMatcher(pattern string) *PathVariableMatcher {
 	}
 	patternBuilder += regexp.QuoteMeta(pattern[end:])
 	patternBuilder = "^" + patternBuilder + "$"
-	log.Tracef("PathVariableMatcher created from pattern=%v, with extracted variables=%v and pattern=%v", pattern, variableNames, patternBuilder)
-	matcher := PathVariableMatcher{
+	log.Tracef("pathVariableMatcher created from pattern=%v, with extracted variables=%v and pattern=%v", pattern, variableNames, patternBuilder)
+	matcher := pathVariableMatcher{
 		variableNames: variableNames,
 		pattern:       regexp.MustCompile(patternBuilder),
 	}
@@ -60,14 +60,14 @@ func NewPathVariableMatcher(pattern string) *PathVariableMatcher {
 }
 
 //Match evaluates whenever matcher matches provided string and extracts variables from said string
-func (m PathVariableMatcher) Match(str string) (match bool, variables map[string]string) {
+func (m pathVariableMatcher) match(str string) (match bool, variables map[string]string) {
 	variables = make(map[string]string)
 	matches := m.pattern.FindStringSubmatchIndex(str)
 	expectedMatches := 1 + len(m.variableNames)
 	expectedMatches *= 2 // each mach has start and end index
 
 	if len(matches) != expectedMatches {
-		log.Tracef("PathVariableMatcher failed to match string=%v to pattern %v", str, *m.pattern)
+		log.Tracef("pathVariableMatcher failed to match string=%v to pattern %v", str, *m.pattern)
 		return
 	}
 	groups := matches[2:]
@@ -79,7 +79,7 @@ func (m PathVariableMatcher) Match(str string) (match bool, variables map[string
 	return true, variables
 }
 
-func (m PathVariableMatcher) String() (text string) {
+func (m pathVariableMatcher) String() (text string) {
 	text = fmt.Sprint("variableNames:", m.variableNames, ", pattern:", *m.pattern)
 	return
 }

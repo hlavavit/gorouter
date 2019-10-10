@@ -8,7 +8,7 @@ import (
 )
 
 //https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/test/java/org/springframework/util/AntPathMatcherTests.java
-func TestDefaultPathMatcher(t *testing.T) {
+func TestdefaultPathMatcher(t *testing.T) {
 	log.SetLevel(log.InfoLevel)
 	checkPathMatcher(t, "test", "test", true, map[string]string{})
 	checkPathMatcher(t, "/test", "/test", true, map[string]string{})
@@ -32,6 +32,7 @@ func TestDefaultPathMatcher(t *testing.T) {
 	checkPathMatcher(t, "test/*", "test/Test", true, map[string]string{})
 	checkPathMatcher(t, "test/*", "test/t", true, map[string]string{})
 	checkPathMatcher(t, "test/*", "test/", true, map[string]string{})
+	checkPathMatcher(t, "test/*", "test/Test/fail", false, map[string]string{})
 	checkPathMatcher(t, "*test*", "AnothertestTest", true, map[string]string{})
 	checkPathMatcher(t, "*test", "Anothertest", true, map[string]string{})
 	checkPathMatcher(t, "*.*", "test.", true, map[string]string{})
@@ -116,7 +117,7 @@ func TestDefaultPathMatcher(t *testing.T) {
 }
 
 func checkPathMatcher(t *testing.T, pattern string, value string, expected bool, extracted map[string]string) {
-	match, variables := NewDefaultPathMatcher(pattern).Match(value)
+	match, variables := newDefaultPathMatcher(pattern).match(value)
 	if match != expected {
 		t.Fatal(fmt.Sprintf("For pattern=%v and value=%v expected match to be %v", pattern, value, expected))
 	}

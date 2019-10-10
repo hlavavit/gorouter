@@ -5,29 +5,29 @@ import (
 	"strings"
 )
 
-// DefaultPathMatcher matches url paths with standard syntax
+// defaultPathMatcher matches url paths with standard syntax
 // * as wildcard, {param:pattern} path variables, ** wildcard for multiple separated paths
 // its inspired by https://github.com/spring-projects/spring-framework/blob/master/spring-core/src/main/java/org/springframework/util/AntPathMatcher.java
-type DefaultPathMatcher struct {
+type defaultPathMatcher struct {
 	pathSeparator        string
 	pattern              string
 	patternTokens        []string
-	patternTokenMatchers map[string]*PathVariableMatcher
+	patternTokenMatchers map[string]*pathVariableMatcher
 	caseSensitive        bool
 	urlVariableRegexp    regexp.Regexp
 	wildcardChars        []rune
 }
 
-//NewDefaultPathMatcher constract url pattern matcher based on url pattern
-func NewDefaultPathMatcher(pattern string) *DefaultPathMatcher {
+//newDefaultPathMatcher constract url pattern matcher based on url pattern
+func newDefaultPathMatcher(pattern string) *defaultPathMatcher {
 
-	matcher := &DefaultPathMatcher{
+	matcher := &defaultPathMatcher{
 		pathSeparator:        "/",
 		pattern:              pattern,
 		caseSensitive:        true,
 		urlVariableRegexp:    *regexp.MustCompile("\\{[^/]+?\\}"),
 		wildcardChars:        []rune{'*', '?', '{'},
-		patternTokenMatchers: make(map[string]*PathVariableMatcher),
+		patternTokenMatchers: make(map[string]*pathVariableMatcher),
 	}
 	matcher.patternTokens = matcher.tokenizePath(pattern)
 	for _, patternToken := range matcher.patternTokens {
@@ -38,7 +38,7 @@ func NewDefaultPathMatcher(pattern string) *DefaultPathMatcher {
 }
 
 // Match check whenever path matches pattern
-func (matcher *DefaultPathMatcher) Match(path string) (bool, map[string]string) {
+func (matcher *defaultPathMatcher) match(path string) (bool, map[string]string) {
 	urlVariables := make(map[string]string, 0)
 
 	if strings.HasPrefix(path, matcher.pathSeparator) != strings.HasPrefix(matcher.pattern, matcher.pathSeparator) {
@@ -60,7 +60,7 @@ func (matcher *DefaultPathMatcher) Match(path string) (bool, map[string]string) 
 		if "**" == (pattToken) {
 			break
 		}
-		match, variables := matcher.getPatternTokenMatcher(pattToken).Match(pathTokens[pathIdxStart])
+		match, variables := matcher.getPatternTokenMatcher(pattToken).match(pathTokens[pathIdxStart])
 		if !match {
 			return false, urlVariables
 		}
@@ -96,7 +96,7 @@ func (matcher *DefaultPathMatcher) Match(path string) (bool, map[string]string) 
 		if pattDir == "**" {
 			break
 		}
-		match, variables := matcher.getPatternTokenMatcher(pattDir).Match(pathTokens[pathIdxEnd])
+		match, variables := matcher.getPatternTokenMatcher(pattDir).match(pathTokens[pathIdxEnd])
 		if !match {
 			return false, urlVariables
 		}
@@ -141,7 +141,7 @@ func (matcher *DefaultPathMatcher) Match(path string) (bool, map[string]string) 
 			for j := 0; j < patLength; j++ {
 				subPat := matcher.patternTokens[pattIdxStart+j+1]
 				subStr := pathTokens[pathIdxStart+i+j]
-				match, variables := matcher.getPatternTokenMatcher(subPat).Match(subStr)
+				match, variables := matcher.getPatternTokenMatcher(subPat).match(subStr)
 				if !match {
 					continue strLoop
 				}
@@ -167,16 +167,16 @@ func (matcher *DefaultPathMatcher) Match(path string) (bool, map[string]string) 
 	return true, urlVariables
 }
 
-func (matcher *DefaultPathMatcher) getPatternTokenMatcher(pattern string) (result *PathVariableMatcher) {
+func (matcher *defaultPathMatcher) getPatternTokenMatcher(pattern string) (result *pathVariableMatcher) {
 	result = matcher.patternTokenMatchers[pattern]
 	if result == nil {
-		result = NewPathVariableMatcher(pattern)
+		result = newPathVariableMatcher(pattern)
 		matcher.patternTokenMatchers[pattern] = result
 	}
 	return
 }
 
-func (matcher *DefaultPathMatcher) isPotentialMatch(path string) bool {
+func (matcher *defaultPathMatcher) isPotentialMatch(path string) bool {
 	var pos int
 
 	for _, patternToken := range matcher.patternTokens {
@@ -192,14 +192,14 @@ func (matcher *DefaultPathMatcher) isPotentialMatch(path string) bool {
 	return true
 }
 
-func (matcher *DefaultPathMatcher) skipSeparator(path string, pos int) (skipped int) {
+func (matcher *defaultPathMatcher) skipSeparator(path string, pos int) (skipped int) {
 	for strings.HasPrefix(path[pos+skipped:], matcher.pathSeparator) {
 		skipped += len(matcher.pathSeparator)
 	}
 	return
 }
 
-func (matcher *DefaultPathMatcher) skipSegment(path string, pos int, segment string) (skipped int) {
+func (matcher *defaultPathMatcher) skipSegment(path string, pos int, segment string) (skipped int) {
 	for _, char := range segment {
 		if matcher.isWildcardChar(char) {
 			return
@@ -214,7 +214,7 @@ func (matcher *DefaultPathMatcher) skipSegment(path string, pos int, segment str
 	}
 	return
 }
-func (matcher *DefaultPathMatcher) isWildcardChar(char rune) bool {
+func (matcher *defaultPathMatcher) isWildcardChar(char rune) bool {
 	for _, candidate := range matcher.wildcardChars {
 		if candidate == char {
 			return true
@@ -223,7 +223,7 @@ func (matcher *DefaultPathMatcher) isWildcardChar(char rune) bool {
 	return false
 }
 
-func (matcher *DefaultPathMatcher) tokenizePath(path string) []string {
+func (matcher *defaultPathMatcher) tokenizePath(path string) []string {
 	tokenCandidates := strings.Split(path, matcher.pathSeparator)
 	//remove empty
 	tokens := make([]string, 0, len(tokenCandidates))
