@@ -1,11 +1,15 @@
 package gorouter
 
-import "github.com/hlavavit/gorouter/endpoints"
+import (
+	"github.com/hlavavit/gorouter/endpoints"
+	"github.com/hlavavit/gorouter/msghandlers"
+)
 
-type Router struct {
-	endpoints []endpoints.Endpoint
+type router struct {
+	endpoints             []endpoints.Endpoint
+	defaultMessageHandler msghandlers.MessageHandler
 }
 
-func (r *Router) AddEndpoints(added ...endpoints.Endpoint) {
+func (r *router) addEndpoints(added ...endpoints.Endpoint) {
 	r.endpoints = append(r.endpoints, added...)
 }

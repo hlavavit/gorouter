@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -34,14 +35,35 @@ func main() {
 }
 
 func run(err chan error) {
-	router := gorouter.Router{}
+	router := gorouter.New()
 
 	endpoint := endpoints.NewBasicEndpoint("/test/{var}", func(rq *message.HTTPRequest, rsp *message.HTTPResponse) {
 		log.Info("Received path variables", rq.GetPathVariables())
+		rsp.Status = message.HTTPStatus(http.StatusOK)
+		rsp.SetStringBody(fmt.Sprintf("path variables: %v", rq.GetPathVariables()))
+	})
+	teapod := endpoints.NewBasicEndpoint("/teapod", func(rq *message.HTTPRequest, rsp *message.HTTPResponse) {
 		rsp.Status = message.HTTPStatus(http.StatusTeapot)
+		rsp.SetStringBody(getTeapod())
 	})
 
-	router.AddEndpoints(endpoint)
+	router.AddEndpoints(endpoint, teapod)
 	server := http.Server{Addr: ":8080", Handler: router}
 	err <- server.ListenAndServe()
+}
+
+func getTeapod() (teapod string) {
+	teapod += "src http://ascii.co.uk/art/teapot\n\n"
+	teapod += "                       (\n"
+	teapod += "            _           ) )\n"
+	teapod += "         _,(_)._        ((\n"
+	teapod += "    ___,(_______).        )\n"
+	teapod += "  ,'__.   /       \\    /\\_\n"
+	teapod += " /,' /  |\"\"|       \\  /  /\n"
+	teapod += "| | |   |__|       |,'  /\n"
+	teapod += " \\`.|                  /\n"
+	teapod += "  `. :           :    /\n"
+	teapod += "    `.            :.,'\n"
+	teapod += "      `-.________,-'	"
+	return teapod
 }

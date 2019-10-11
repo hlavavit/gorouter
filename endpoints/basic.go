@@ -2,12 +2,13 @@ package endpoints
 
 import (
 	"github.com/hlavavit/gorouter/message"
+	"github.com/hlavavit/gorouter/msghandlers"
 	"github.com/hlavavit/gorouter/pathmatcher"
 )
 
 type basic struct {
 	matcher        pathmatcher.Matcher
-	messageHandler func(request *message.HTTPRequest, response *message.HTTPResponse)
+	messageHandler msghandlers.MessageHandler
 }
 
 func (ep basic) match(request *message.HTTPRequest) (match bool, pathVariables map[string]string) {
