@@ -8,6 +8,7 @@ import (
 
 type basic struct {
 	matcher        pathmatcher.Matcher
+	filters        []Filter
 	messageHandler msghandlers.MessageHandler
 }
 
@@ -26,6 +27,7 @@ func (ep basic) handleMessage(request *message.HTTPRequest, response *message.HT
 		return false
 	}
 	request.SetPathVariables(pathVariables)
-	ep.messageHandler(request, response)
+	ep.processFilterchain(request, response)
+
 	return true
 }

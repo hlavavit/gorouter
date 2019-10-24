@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/hlavavit/gorouter/message"
+	"github.com/hlavavit/gorouter/msghandlers"
+
 	"github.com/hlavavit/gorouter/endpoints"
 
 	"github.com/hlavavit/gorouter"
@@ -36,8 +39,20 @@ func main() {
 func run(err chan error) {
 	router := gorouter.New()
 
+	filters := make([]endpoints.Filter, 0)
+	filters = append(filters, func(rq *message.HTTPRequest, rsp *message.HTTPResponse, proceed msghandlers.MessageHandler) {
+		log.Trace("Filter 1 start")
+		proceed(rq, rsp)
+		log.Trace("Filter 1 end")
+	})
+	filters = append(filters, func(rq *message.HTTPRequest, rsp *message.HTTPResponse, proceed msghandlers.MessageHandler) {
+		log.Trace("Filter 2 start")
+		proceed(rq, rsp)
+		log.Trace("Filter 2 end")
+	})
+
 	variable := endpoints.NewBasicEndpoint("/variable/{var}", HandleVariables)
-	teapod := endpoints.NewBasicEndpoint("/teapot", HandleTeapot)
+	teapod := endpoints.NewBasicEndpoint("/teapot", HandleTeapot, filters...)
 
 	router.AddEndpoints(variable, teapod)
 	server := http.Server{Addr: ":8080", Handler: router}
